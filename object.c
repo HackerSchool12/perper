@@ -20,6 +20,7 @@ hash_t ostring_hash(Object *obj) {
 OString *new_ostring(char *str) {
 	OString *ostr = malloc(sizeof(OString));
 	ostr->proto.hash = ostring_hash;
+	ostr->proto.class = OSTRING;
 	//TODO add equality
 	ostr->str = str;
 	return ostr;
