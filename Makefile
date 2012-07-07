@@ -1,5 +1,10 @@
 CFLAGS=-Wall -g 
 
-all: hash
+all: hashmap
  
-hash: bstrlib/bstrlib.o 
+hashmap: hashmap.o object.o
+
+.PHONY: clean all
+clean:
+	rm *.o hashmap
+

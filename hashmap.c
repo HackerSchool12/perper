@@ -1,17 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "hashmap.h"
-
-hash_t hash(Object *obj, int size) {
-	hash_t hash = 0;
-	int c;
-
-	for(c = 0; c < size; c++)
-		hash = *((char *) obj + c) + (hash << 6) + (hash << 16) - hash;
-
-	return hash;
-}
 
 Node *new_empty_node() {
 	static Node *n = NULL;
@@ -45,7 +36,11 @@ BitmapNode * new_bitmap_node() {
 	return n;
 }
 
-CollisionNode * new_collision_node();
+CollisionNode * new_collision_node() {
+	CollisionNode *n = malloc(sizeof(CollisionNode));
+	n->next = NULL;
+	return n;
+}
 
 Object *empty_find(Node *self, int level, hash_t hash, Object *key) {
 	return NULL;
@@ -76,19 +71,43 @@ Node *empty_insert(Node *self, int level, hash_t hash, Object *key, Object *valu
 }
 
 Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *value) {
-	SingleNode *n = (SingleNode*)self;
-	SingleNode *m = new_single_node();
-	m->key = key;
-	m->hash = hash;
-	m->value = value;
+	SingleNode *node = (SingleNode*)self;
 
-	BitmapNode *o = new_bitmap_node();
-	// wrong
-	o->children[n->hash & 31] = n;
-	o->children[m->hash & 31] = m;
-	return (Node*)o;
+	if(node->hash == hash) {
+		CollisionNode *col_node = new_collision_node();
+		CollisionNode *next_col_node = new_collision_node();
+
+		col_node->proto = *node;
+		col_node->next = next_col_node;
+
+		next_col_node->proto.key = key;
+		next_col_node->proto.hash = hash;
+		next_col_node->proto.value = value;
+		
+		return (Node*)col_node;
+	} else {
+		BitmapNode *parent = new_bitmap_node();
+
+		parent->children[(node->hash >> (5 * level)) & 31] = (Node*)node;
+
+		Node *second_child = parent->children[(hash >> (5 * level)) & 31];
+		parent->children[(hash >> (5 * level)) & 31] = second_child->insert(second_child, level++, hash, key, value);
+
+		return (Node*)parent;
+	}
 }
-Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+
+Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *value) {
+	BitmapNode *node = (BitmapNode*)self;
+	BitmapNode *new = malloc(sizeof(BitmapNode));
+	memcpy(new, node, sizeof(BitmapNode));
+
+	Node *child = new->children[(hash >> (5 * level)) & 31];
+	new->children[(hash >> (5 * level)) & 31] = child->insert(child, level++, hash, key, value);
+
+	return (Node*)new;
+}
+
 Node *collision_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
 
 Node *empty_remove(Node *self, int level, hash_t hash, Object *key) {
@@ -102,9 +121,29 @@ Node *single_remove(Node *self, int level, hash_t hash, Object *key) {
 		return self;
 	}
 }
-Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key);
-Node *collision_remove(Node *self, hash_t hash, Object *key);
+
+Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key) {
+	BitmapNode *node = (BitmapNode*)self;
+	BitmapNode *new = malloc(sizeof(BitmapNode));
+	memcpy(new, node, sizeof(BitmapNode));
+	
+	Node *child = new->children[(hash >> (5 * level)) & 31];
+	new->children[(hash >> (5 * level)) & 31] = child->remove(child, level++, hash, key);
+
+	return (Node*)new;
+}
+
+Node *collision_remove(Node *self, int level, hash_t hash, Object *key);
 
 int main(int argc, char **argv) {
 	printf("hello world");
+	/*
+	Node *myhash = new_empty_node();
+	OString *key = new_string("fooo baar");
+	OString *value = new_string("baz boo");
+
+	Node *newhash = myhash->insert(myhash, 0, key->hash(key), key, value);
+
+	printf("the value is %s\n", ostrcstr(newhash->find(newhash, 0, key->hash(key), key, value)));
+	*/
 }

@@ -1,14 +1,9 @@
-typedef struct Object Object;
+#include "object.h"
+
 typedef struct Node Node;
 typedef struct SingleNode SingleNode;
 typedef struct BitmapNode BitmapNode;
 typedef struct CollisionNode CollisionNode;
-
-typedef unsigned int hash_t;
-
-// hash method on Objects that returns a hash of itself. See also the hash helper function.
-typedef hash_t (*hasher)(Object *obj);
-typedef hash_t (*equalifier)(Object *obj, Object *other);
 
 // lookup this Object key in itself using Object->hash
 typedef Object *(*finder)(Node *self, int level, hash_t hash, Object *key);
@@ -16,12 +11,6 @@ typedef Object *(*finder)(Node *self, int level, hash_t hash, Object *key);
 typedef Node *(*inserter)(Node *self, int level, hash_t hash, Object *key, Object *value);
 // remove key from self
 typedef Node *(*remover)(Node *self, int level, hash_t hash, Object *key);
-
-// everything that goes into a map should implement this
-struct Object {
-	hasher hash;
-	equalifier equal;
-};
 
 // The abstract/empty node. All nodes implement this interface.
 // Node is an Object, which allows maps to be keys and values
@@ -31,7 +20,7 @@ struct Node {
 	finder find;
 	// return a SingleNode
 	inserter insert;
-	// always returns the EmprtyNode
+	// always returns the empty node
 	remover remove;
 };
 
@@ -61,7 +50,6 @@ struct BitmapNode {
 	Node *children[32];
 };
 
-hash_t hash(Object *obj, int size);
 
 Node *new_empty_node();
 SingleNode *new_single_node();
