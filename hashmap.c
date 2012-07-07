@@ -3,8 +3,8 @@
 
 #include "hashmap.h"
 
-unsigned int hash(Object *obj, int size) {
-	unsigned int hash = 0;
+hash_t hash(Object *obj, int size) {
+	hash_t hash = 0;
 	int c;
 
 	for(c = 0; c < size; c++)
@@ -37,16 +37,21 @@ BitmapNode * new_bitmap_node() {
 	n->proto.find = bitmap_find;
 	n->proto.insert = bitmap_insert;
 	n->proto.remove = bitmap_remove;
+	n->count = 0;
+	int i;
+	for(i=0;i<32;i++) {
+		n->children[i] = new_empty_node();
+	}
 	return n;
 }
 
 CollisionNode * new_collision_node();
 
-Object *empty_find(Node *self, unsigned int hash, Object *key) {
+Object *empty_find(Node *self, int level, hash_t hash, Object *key) {
 	return NULL;
 }
 
-Object *single_find(Node *self, unsigned int hash, Object *key) {
+Object *single_find(Node *self, int level, hash_t hash, Object *key) {
 	if(((SingleNode*)self)->hash == hash) {
 		return ((SingleNode*)self)->value;
 	} else {
@@ -54,10 +59,15 @@ Object *single_find(Node *self, unsigned int hash, Object *key) {
 	}
 }
 
-Object *bitmap_find(Node *self, unsigned int hash, Object *key);
-Object *collision_find(Node *self, unsigned int hash, Object *key);
+Object *bitmap_find(Node *self, int level, hash_t hash, Object *key) {
+	BitmapNode *n = (BitmapNode*)self;
+	Node *child = n->children[(hash >> (5 * level)) & 31];
+	return child->find(child, level++, hash, key);
+}
 
-Node *empty_insert(Node *self, unsigned int hash, Object *key, Object *value) {
+Object *collision_find(Node *self, int level, hash_t hash, Object *key);
+
+Node *empty_insert(Node *self, int level, hash_t hash, Object *key, Object *value) {
 	SingleNode *n = new_single_node();
 	n->key = key;
 	n->hash = hash;
@@ -65,20 +75,36 @@ Node *empty_insert(Node *self, unsigned int hash, Object *key, Object *value) {
 	return (Node*)n;
 }
 
-Node *single_insert(Node *self, unsigned int hash, Object *key, Object *value);
-Node *bitmap_insert(Node *self, unsigned int hash, Object *key, Object *value);
-Node *collision_insert(Node *self, unsigned int hash, Object *key, Object *value);
+Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *value) {
+	SingleNode *n = (SingleNode*)self;
+	SingleNode *m = new_single_node();
+	m->key = key;
+	m->hash = hash;
+	m->value = value;
 
-Node *empty_remove(Node *self, unsigned int hash, Object *key) {
+	BitmapNode *o = new_bitmap_node();
+	// wrong
+	o->children[n->hash & 31] = n;
+	o->children[m->hash & 31] = m;
+	return (Node*)o;
+}
+Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+Node *collision_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+
+Node *empty_remove(Node *self, int level, hash_t hash, Object *key) {
 	return self;
 }
 
-Node *single_remove(Node *self, unsigned int hash, Object *key) {
+Node *single_remove(Node *self, int level, hash_t hash, Object *key) {
 	if(((SingleNode*)self)->hash == hash) {
 		return new_empty_node();
 	} else {
 		return self;
 	}
 }
-Node bitmap_remove(Node *self, unsigned int hash, Object *key);
-Node collision_remove(Node *self, unsigned int hash, Object *key);
+Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key);
+Node *collision_remove(Node *self, hash_t hash, Object *key);
+
+int main(int argc, char **argv) {
+	printf("hello world");
+}

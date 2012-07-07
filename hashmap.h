@@ -4,16 +4,18 @@ typedef struct SingleNode SingleNode;
 typedef struct BitmapNode BitmapNode;
 typedef struct CollisionNode CollisionNode;
 
+typedef unsigned int hash_t;
+
 // hash method on Objects that returns a hash of itself. See also the hash helper function.
-typedef unsigned int (*hasher)(Object *obj);
-typedef unsigned int (*equalifier)(Object *obj, Object *other);
+typedef hash_t (*hasher)(Object *obj);
+typedef hash_t (*equalifier)(Object *obj, Object *other);
 
 // lookup this Object key in itself using Object->hash
-typedef Object *(*finder)(Node *self, unsigned int hash, Object *key);
+typedef Object *(*finder)(Node *self, int level, hash_t hash, Object *key);
 // insert value into Node under key
-typedef Node *(*inserter)(Node *self, unsigned int hash, Object *key, Object *value);
+typedef Node *(*inserter)(Node *self, int level, hash_t hash, Object *key, Object *value);
 // remove key from self
-typedef Node *(*remover)(Node *self, unsigned int hash, Object *key);
+typedef Node *(*remover)(Node *self, int level, hash_t hash, Object *key);
 
 // everything that goes into a map should implement this
 struct Object {
@@ -40,7 +42,7 @@ struct Node {
 struct SingleNode {
 	Node proto;
 	Object *key;
-	unsigned int hash;
+	hash_t hash;
 	Object *value;
 };
 
@@ -54,28 +56,29 @@ struct CollisionNode {
 // takes the first 5 bytes of the hash of key
 // calls the respective function on that key, bitshifting the hash.
 struct BitmapNode {
-	Node Proto;
+	Node proto;
+	int count;
 	Node *children[32];
 };
 
-unsigned int hash(Object *obj, int size);
+hash_t hash(Object *obj, int size);
 
 Node *new_empty_node();
 SingleNode *new_single_node();
 BitmapNode * new_bitmap_node();
 CollisionNode * new_collision_node();
 
-Object *empty_find(Node *self, unsigned int hash, Object *key);
-Object *single_find(Node *self, unsigned int hash, Object *key);
-Object *bitmap_find(Node *self, unsigned int hash, Object *key);
-Object *collision_find(Node *self, unsigned int hash, Object *key);
+Object *empty_find(Node *self, int level, hash_t hash, Object *key);
+Object *single_find(Node *self, int level, hash_t hash, Object *key);
+Object *bitmap_find(Node *self, int level, hash_t hash, Object *key);
+Object *collision_find(Node *self, int level, hash_t hash, Object *key);
 
-Node *empty_insert(Node *self, unsigned int hash, Object *key, Object *value);
-Node *single_insert(Node *self, unsigned int hash, Object *key, Object *value);
-Node *bitmap_insert(Node *self, unsigned int hash, Object *key, Object *value);
-Node *collision_insert(Node *self, unsigned int hash, Object *key, Object *value);
+Node *empty_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+Node *collision_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
 
-Node *empty_remove(Node *self, unsigned int hash, Object *key);
-Node *single_remove(Node *self, unsigned int hash, Object *key);
-Node bitmap_remove(Node *self, unsigned int hash, Object *key);
-Node collision_remove(Node *self, unsigned int hash, Object *key);
+Node *empty_remove(Node *self, int level, hash_t hash, Object *key);
+Node *single_remove(Node *self, int level, hash_t hash, Object *key);
+Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key);
+Node *collision_remove(Node *self, int level, hash_t hash, Object *key);
