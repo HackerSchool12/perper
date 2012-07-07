@@ -1,4 +1,5 @@
 typedef struct Object Object;
+typedef struct OString OString;
 typedef unsigned int hash_t;
 
 // hash method on Objects that returns a hash of itself. See also the hash helper function.
@@ -11,4 +12,15 @@ struct Object {
 	equalifier equal;
 };
 
+struct OString {
+	Object proto;
+	char * str;
+};
+
+#define OSTRLEN(o) strlen(OSTR2CSTR(o))
+#define OSTR2CSTR(o) ((OString*)(o))->str
+
+OString *new_ostring(char *str);
+
 hash_t hash(void *obj, int size);
+

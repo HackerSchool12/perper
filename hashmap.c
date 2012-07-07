@@ -136,14 +136,27 @@ Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key) {
 Node *collision_remove(Node *self, int level, hash_t hash, Object *key);
 
 int main(int argc, char **argv) {
-	printf("hello world");
-	/*
+	printf("hello world\n");
 	Node *myhash = new_empty_node();
-	OString *key = new_string("fooo baar");
-	OString *value = new_string("baz boo");
+	OString *key = new_ostring("fooo baar");
+	OString *value = new_ostring("baz boo");
 
-	Node *newhash = myhash->insert(myhash, 0, key->hash(key), key, value);
+	Node *newhash = myhash->insert(myhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
 
-	printf("the value is %s\n", ostrcstr(newhash->find(newhash, 0, key->hash(key), key, value)));
-	*/
+	printf("the value is %s\n", OSTR2CSTR(newhash->find(newhash, 0, key->proto.hash((Object*)key), (Object*)key)));
+
+	key = new_ostring("blaha");
+	value = new_ostring("jhshjda");
+
+	Node *newnewhash = myhash->insert(myhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
+
+	printf("the value is %s\n", OSTR2CSTR(newnewhash->find(newnewhash, 0, key->proto.hash((Object*)key), (Object*)key)));
+
+	key = new_ostring("kkjs");
+	value = new_ostring("fooo");
+
+	Node *newnewnewhash = myhash->insert(myhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
+
+	printf("the value is %s\n", OSTR2CSTR(newnewnewhash->find(newnewnewhash, 0, key->proto.hash((Object*)key), (Object*)key)));
+
 }
