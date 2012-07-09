@@ -51,6 +51,12 @@ struct BitmapNode {
 };
 
 
+#define INSERT(map, key, value) ((Node*)map)->insert(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key), ((Object*)value))
+
+#define FIND(map, key) ((Node*)map)->find(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key))
+
+#define REMOVE(map, key) ((Node*)map)->remove(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key))
+
 Node *new_empty_node();
 SingleNode *new_single_node();
 BitmapNode * new_bitmap_node();

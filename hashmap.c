@@ -47,12 +47,10 @@ CollisionNode * new_collision_node() {
 }
 
 Object *empty_find(Node *self, int level, hash_t hash, Object *key) {
-	printf("empty hash: %u\n", (hash >> (5 * level)) & 31);
 	return NULL;
 }
 
 Object *single_find(Node *self, int level, hash_t hash, Object *key) {
-	printf("single hash: %u\n", (hash >> (5 * level)) & 31);
 	if(((SingleNode*)self)->hash == hash) {
 		return ((SingleNode*)self)->value;
 	} else {
@@ -61,7 +59,6 @@ Object *single_find(Node *self, int level, hash_t hash, Object *key) {
 }
 
 Object *bitmap_find(Node *self, int level, hash_t hash, Object *key) {
-	printf("bitmap hash: %u\n", (hash >> (5 * level)) & 31);
 	BitmapNode *n = (BitmapNode*)self;
 	Node *child = n->children[(hash >> (5 * level)) & 31];
 	return child->find(child, (level+1), hash, key);
@@ -108,7 +105,7 @@ Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *val
 	BitmapNode *new = malloc(sizeof(BitmapNode));
 	memcpy(new, node, sizeof(BitmapNode));
 
-	Node *child = new->children[(hash >> (5 * level)) & 31];
+	Node *child = node->children[(hash >> (5 * level)) & 31];
 	new->children[(hash >> (5 * level)) & 31] = child->insert(child, (level+1), hash, key, value);
 
 	return (Node*)new;
@@ -154,7 +151,7 @@ void print_tree(Node *n, int space) {
 		case BITMAPNODE:
 			printf("b:");
 			for(s=0;s<32;s++) {
-				print_tree(((BitmapNode*)n)->children[s], space++);
+				print_tree(((BitmapNode*)n)->children[s], (space + 4));
 			}
 			break;
 		default:
@@ -168,30 +165,32 @@ int main(int argc, char **argv) {
 	OString *key = new_ostring("fooo baar");
 	OString *value = new_ostring("baz boo");
 
-	Node *newhash = myhash->insert(myhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
+	Node *newhash = INSERT(myhash, key, value);
 
-	printf("the value is %s\n", OSTR2CSTR(newhash->find(newhash, 0, key->proto.hash((Object*)key), (Object*)key)));
+	printf("the value is %s\n", OSTR2CSTR(FIND(newhash, key)));
 
 	key = new_ostring("blah");
 	value = new_ostring("jhshjda");
 
-	Node *newnewhash = newhash->insert(newhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
+	Node *newnewhash = INSERT(newhash, key, value);
 
-	Object *t = newnewhash->find(newnewhash, 0, key->proto.hash((Object*)key), (Object*)key);
+	Object *t = FIND(newnewhash, key);
 	if(t != NULL) {
 		printf("the value is %s\n", OSTR2CSTR(t));
 
 	} else {
 		printf("not found\n");
 	}
-	/* 
+	
+	key = new_ostring("blaha");
 	value = new_ostring("fooo");
 
-	Node *newnewnewhash = newnewhash->insert(newnewhash, 0, key->proto.hash((Object*)key), (Object*)key, (Object*)value);
+	Node *newnewnewhash = INSERT(newnewhash, key, value);
 
-	printf("the value is %s\n", OSTR2CSTR(newnewnewhash->find(newnewnewhash, 0, key->proto.hash((Object*)key), (Object*)key)));
-	printf("the value is  still %s\n", OSTR2CSTR(newnewhash->find(newnewhash, 0, key->proto.hash((Object*)key), (Object*)key))); */
+	printf("the value is %s here\n", OSTR2CSTR(FIND(newnewnewhash, key)));
+	printf("wat");
+	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, key)));
 
-	print_tree(newnewhash,0);
+	print_tree(newnewnewhash,0);
 
 }
