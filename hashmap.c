@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
 
 	printf("the value is %s here\n", OSTR2CSTR(FIND(newnewnewhash, key)));
 	printf("wat");
-	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, key)));
+	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, new_ostring("blah"))));
 
 	print_tree(newnewnewhash,0);
 
