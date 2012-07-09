@@ -64,7 +64,7 @@ Object *bitmap_find(Node *self, int level, hash_t hash, Object *key) {
 	printf("bitmap hash: %u\n", (hash >> (5 * level)) & 31);
 	BitmapNode *n = (BitmapNode*)self;
 	Node *child = n->children[(hash >> (5 * level)) & 31];
-	return child->find(child, ++level, hash, key);
+	return child->find(child, (level+1), hash, key);
 }
 
 Object *collision_find(Node *self, int level, hash_t hash, Object *key);
@@ -98,7 +98,7 @@ Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *val
 		parent->children[(node->hash >> (5 * level)) & 31] = (Node*)node;
 
 		Node *second_child = parent->children[(hash >> (5 * level)) & 31];
-		parent->children[(hash >> (5 * level)) & 31] = second_child->insert(second_child, ++level, hash, key, value);
+		parent->children[(hash >> (5 * level)) & 31] = second_child->insert(second_child, (level+1), hash, key, value);
 		return (Node*)parent;
 	}
 }
@@ -109,7 +109,7 @@ Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *val
 	memcpy(new, node, sizeof(BitmapNode));
 
 	Node *child = new->children[(hash >> (5 * level)) & 31];
-	new->children[(hash >> (5 * level)) & 31] = child->insert(child, ++level, hash, key, value);
+	new->children[(hash >> (5 * level)) & 31] = child->insert(child, (level+1), hash, key, value);
 
 	return (Node*)new;
 }
@@ -134,7 +134,7 @@ Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key) {
 	memcpy(new, node, sizeof(BitmapNode));
 	
 	Node *child = new->children[(hash >> (5 * level)) & 31];
-	new->children[(hash >> (5 * level)) & 31] = child->remove(child, ++level, hash, key);
+	new->children[(hash >> (5 * level)) & 31] = child->remove(child, (level+1), hash, key);
 
 	return (Node*)new;
 }
