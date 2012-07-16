@@ -148,7 +148,10 @@ void print_tree(Node *n, int space) {
 			while(s--) {
 				printf(" ");
 			}
-			printf("s: %u, %s\n", ((SingleNode*)n)->key->hash, ((OString*)((SingleNode*)n)->value)->str);
+			if(((SingleNode*)n)->value->class == OSTRING)
+				printf("s: %u, %s\n", ((SingleNode*)n)->key->hash, ((OString*)((SingleNode*)n)->value)->str);
+			else if(((SingleNode*)n)->value->class == OINT)
+				printf("s: %u, %d\n", ((SingleNode*)n)->key->hash, ((OInt*)((SingleNode*)n)->value)->n);
 			break;
 		case BITMAPNODE:
 			printf("b:");
@@ -189,7 +192,7 @@ int main(int argc, char **argv) {
 	
 	key = new_ostring("blIrp4iu34iurjbk");
 	value = new_ostring("fooo");
-	OString* value2 = new_ostring("barbazbatquux");
+	OInt* value2 = new_oint(300);
 
 	Node *newnewnewhash = INSERT(newnewhash, key, value);
 

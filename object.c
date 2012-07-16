@@ -27,3 +27,19 @@ OString *new_ostring(char *str) {
 	ostr->str = str;
 	return ostr;
 }
+
+bool oint_equal(Object *self, Object *other) {
+	if(self->class == other->class && ((OInt*)self)->n == ((OInt*)other)->n)
+		return true;
+	else
+		return false;
+}
+
+OInt *new_oint(int n) {
+	OInt *on = malloc(sizeof(OInt));
+	((Object*)on)->hash = (hash_t)n;
+	((Object*)on)->class = OINT;
+	((Object*)on)->equal = oint_equal;
+	on->n = n;
+	return on;
+}

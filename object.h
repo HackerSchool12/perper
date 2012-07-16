@@ -2,6 +2,7 @@
 
 typedef struct Object Object;
 typedef struct OString OString;
+typedef struct OInt OInt;
 typedef unsigned int hash_t;
 
 typedef enum class_t {
@@ -11,6 +12,7 @@ typedef enum class_t {
 	BITMAPNODE,
 	COLLISIONNODE,
 	OSTRING,
+	OINT,
 } class_t;
 
 typedef bool (*equalifier)(Object *obj, Object *other);
@@ -31,6 +33,12 @@ struct OString {
 #define OSTR2CSTR(o) ((OString*)(o))->str
 
 OString *new_ostring(char *str);
+OInt *new_oint(int n);
+
+struct OInt {
+	Object proto;
+	int n;
+};
 
 hash_t hash(void *obj, int size);
 
