@@ -6,11 +6,11 @@ typedef struct BitmapNode BitmapNode;
 typedef struct CollisionNode CollisionNode;
 
 // lookup this Object key in itself using Object->hash
-typedef Object *(*finder)(Node *self, int level, hash_t hash, Object *key);
+typedef Object *(*finder)(Node *self, int level, Object *key);
 // insert value into Node under key
-typedef Node *(*inserter)(Node *self, int level, hash_t hash, Object *key, Object *value);
+typedef Node *(*inserter)(Node *self, int level, Object *key, Object *value);
 // remove key from self
-typedef Node *(*remover)(Node *self, int level, hash_t hash, Object *key);
+typedef Node *(*remover)(Node *self, int level, Object *key);
 
 // The abstract/empty node. All nodes implement this interface.
 // Node is an Object, which allows maps to be keys and values
@@ -31,7 +31,6 @@ struct Node {
 struct SingleNode {
 	Node proto;
 	Object *key;
-	hash_t hash;
 	Object *value;
 };
 
@@ -50,28 +49,28 @@ struct BitmapNode {
 };
 
 
-#define INSERT(map, key, value) ((Node*)map)->insert(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key), ((Object*)value))
+#define INSERT(map, key, value) ((Node*)map)->insert(((Node*)map), 0, ((Object*)key), ((Object*)value))
 
-#define FIND(map, key) ((Node*)map)->find(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key))
+#define FIND(map, key) ((Node*)map)->find(((Node*)map), 0, ((Object*)key))
 
-#define REMOVE(map, key) ((Node*)map)->remove(((Node*)map), 0, ((Object*)key)->hash(((Object*)key)), ((Object*)key))
+#define REMOVE(map, key) ((Node*)map)->remove(((Node*)map), 0, ((Object*)key))
 
 Node *new_empty_node();
 SingleNode *new_single_node();
 BitmapNode * new_bitmap_node();
 CollisionNode * new_collision_node();
 
-Object *empty_find(Node *self, int level, hash_t hash, Object *key);
-Object *single_find(Node *self, int level, hash_t hash, Object *key);
-Object *bitmap_find(Node *self, int level, hash_t hash, Object *key);
-Object *collision_find(Node *self, int level, hash_t hash, Object *key);
+Object *empty_find(Node *self, int level, Object *key);
+Object *single_find(Node *self, int level, Object *key);
+Object *bitmap_find(Node *self, int level, Object *key);
+Object *collision_find(Node *self, int level, Object *key);
 
-Node *empty_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
-Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
-Node *bitmap_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
-Node *collision_insert(Node *self, int level, hash_t hash, Object *key, Object *value);
+Node *empty_insert(Node *self, int level, Object *key, Object *value);
+Node *single_insert(Node *self, int level, Object *key, Object *value);
+Node *bitmap_insert(Node *self, int level, Object *key, Object *value);
+Node *collision_insert(Node *self, int level, Object *key, Object *value);
 
-Node *empty_remove(Node *self, int level, hash_t hash, Object *key);
-Node *single_remove(Node *self, int level, hash_t hash, Object *key);
-Node *bitmap_remove(Node *self, int level, hash_t hash, Object *key);
-Node *collision_remove(Node *self, int level, hash_t hash, Object *key);
+Node *empty_remove(Node *self, int level, Object *key);
+Node *single_remove(Node *self, int level, Object *key);
+Node *bitmap_remove(Node *self, int level, Object *key);
+Node *collision_remove(Node *self, int level, Object *key);

@@ -12,14 +12,9 @@ hash_t hash(void *obj, int size) {
 	return hash;
 }
 
-hash_t ostring_hash(Object *obj) {
-	char *s = OSTR2CSTR(obj);
-	return hash(s, strlen(s));
-}
-
 OString *new_ostring(char *str) {
 	OString *ostr = malloc(sizeof(OString));
-	ostr->proto.hash = ostring_hash;
+	ostr->proto.hash = hash(str, strlen(str));
 	ostr->proto.class = OSTRING;
 	//TODO add equality
 	ostr->str = str;

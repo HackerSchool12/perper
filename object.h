@@ -13,14 +13,12 @@ typedef enum class_t {
 	OSTRING,
 } class_t;
 
-// hash method on Objects that returns a hash of itself. See also the hash helper function.
-typedef hash_t (*hasher)(Object *obj);
 typedef bool (*equalifier)(Object *obj, Object *other);
 
 // everything that goes into a map should implement this
 struct Object {
 	class_t class;
-	hasher hash;
+	hash_t hash;
 	equalifier equal;
 };
 
