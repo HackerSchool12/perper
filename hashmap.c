@@ -63,7 +63,17 @@ Object *bitmap_find(Node *self, int level, Object *key) {
 	return child->find(child, (level+1), key);
 }
 
-Object *collision_find(Node *self, int level, Object *key);
+Object *collision_find(Node *self, int level, Object *key) {
+	SingleNode *n = (SingleNode*)self;
+	CollisionNode *m = (CollisionNode*)self;
+	if(n->key->equal(n->key, key)) {
+		return n->value;
+	} else if(m->next != NULL) {
+		return collision_find((Node*)m->next, level, key);
+	} else {
+		return NULL;
+	}
+}
 
 Node *empty_insert(Node *self, int level, Object *key, Object *value) {
 	SingleNode *n = new_single_node();
@@ -114,7 +124,13 @@ Node *bitmap_insert(Node *self, int level, Object *key, Object *value) {
 	return (Node*)new;
 }
 
-Node *collision_insert(Node *self, int level, Object *key, Object *value);
+Node *collision_insert(Node *self, int level, Object *key, Object *value) {
+	CollisionNode *n = new_collision_node();
+	((SingleNode*)n)->key = key;
+	((SingleNode*)n)->value = value;
+	n->next = (CollisionNode*)self;
+	return (Node*)n;
+}
 
 Node *empty_remove(Node *self, int level, Object *key) {
 	return self;
