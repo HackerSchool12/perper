@@ -12,11 +12,18 @@ hash_t hash(void *obj, int size) {
 	return hash;
 }
 
+bool ostring_equal(Object *self, Object *other) {
+	if ((self->class == other->class) && (strcmp(((OString*)self)->str, ((OString*)other)->str) == 0))
+		return true;
+	else
+		return false;
+}
+
 OString *new_ostring(char *str) {
 	OString *ostr = malloc(sizeof(OString));
 	ostr->proto.hash = hash(str, strlen(str));
 	ostr->proto.class = OSTRING;
-	//TODO add equality
+	ostr->proto.equal = ostring_equal;
 	ostr->str = str;
 	return ostr;
 }

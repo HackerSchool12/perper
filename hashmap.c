@@ -75,7 +75,20 @@ Node *empty_insert(Node *self, int level, Object *key, Object *value) {
 Node *single_insert(Node *self, int level, Object *key, Object *value) {
 	SingleNode *node = (SingleNode*)self;
 
-	if(node->key->hash == key->hash) {
+	if(node->key->hash != key->hash) {
+		BitmapNode *parent = new_bitmap_node();
+
+		parent->children[(node->key->hash >> (5 * level)) & 31] = (Node*)node;
+
+		Node *second_child = parent->children[(key->hash >> (5 * level)) & 31];
+		parent->children[(key->hash >> (5 * level)) & 31] = second_child->insert(second_child, (level+1), key, value);
+		return (Node*)parent;
+	} else if (node->key->equal(node->key, key)) {
+		SingleNode *n = new_single_node();
+		n->key = key;
+		n->value = value;
+		return (Node*)n;
+	} else {
 		CollisionNode *col_node = new_collision_node();
 		CollisionNode *next_col_node = new_collision_node();
 
@@ -86,14 +99,6 @@ Node *single_insert(Node *self, int level, Object *key, Object *value) {
 		((SingleNode*)next_col_node)->value = value;
 		
 		return (Node*)col_node;
-	} else {
-		BitmapNode *parent = new_bitmap_node();
-
-		parent->children[(node->key->hash >> (5 * level)) & 31] = (Node*)node;
-
-		Node *second_child = parent->children[(key->hash >> (5 * level)) & 31];
-		parent->children[(key->hash >> (5 * level)) & 31] = second_child->insert(second_child, (level+1), key, value);
-		return (Node*)parent;
 	}
 }
 
@@ -184,13 +189,14 @@ int main(int argc, char **argv) {
 	
 	key = new_ostring("blIrp4iu34iurjbk");
 	value = new_ostring("fooo");
+	OString* value2 = new_ostring("barbazbatquux");
 
 	Node *newnewnewhash = INSERT(newnewhash, key, value);
 
 	printf("the value is %s here\n", OSTR2CSTR(FIND(newnewnewhash, key)));
 	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, new_ostring("blah"))));
 
-	print_tree(newnewnewhash,0);
+	/*print_tree(newnewnewhash,0);
 
 	Node *newnewnewnewhash = REMOVE(newnewnewhash, key);
 	t = FIND(newnewhash, key);
@@ -203,7 +209,12 @@ int main(int argc, char **argv) {
 	}
 
 
-	print_tree(newnewnewnewhash,0);
+	print_tree(newnewnewnewhash,0); */
+
+	Node *gnuhash = INSERT(newnewnewhash, key, value2);
+
+	print_tree(gnuhash, 0);
+
 	return 0;
 
 }
