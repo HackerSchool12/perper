@@ -46,7 +46,6 @@ struct CollisionNode {
 // calls the respective function on that key, bitshifting the hash.
 struct BitmapNode {
 	Node proto;
-	int count;
 	Node *children[32];
 };
 

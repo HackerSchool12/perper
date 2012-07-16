@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 typedef struct Object Object;
 typedef struct OString OString;
 typedef unsigned int hash_t;
@@ -13,7 +15,7 @@ typedef enum class_t {
 
 // hash method on Objects that returns a hash of itself. See also the hash helper function.
 typedef hash_t (*hasher)(Object *obj);
-typedef hash_t (*equalifier)(Object *obj, Object *other);
+typedef bool (*equalifier)(Object *obj, Object *other);
 
 // everything that goes into a map should implement this
 struct Object {

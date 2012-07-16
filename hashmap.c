@@ -9,9 +9,9 @@ Node *new_empty_node() {
 	if(n == NULL) {
 		n = malloc(sizeof(Node));
 		((Object*)n)->class = EMPTYNODE;
-		((Node*)n)->find = empty_find;
-		((Node*)n)->insert = empty_insert;
-		((Node*)n)->remove = empty_remove;
+		n->find = empty_find;
+		n->insert = empty_insert;
+		n->remove = empty_remove;
 	}
 	return n;
 }
@@ -31,7 +31,6 @@ BitmapNode * new_bitmap_node() {
 	((Node*)n)->find = bitmap_find;
 	((Node*)n)->insert = bitmap_insert;
 	((Node*)n)->remove = bitmap_remove;
-	n->count = 0;
 	int i;
 	for(i=0;i<32;i++) {
 		n->children[i] = new_empty_node();
@@ -84,9 +83,9 @@ Node *single_insert(Node *self, int level, hash_t hash, Object *key, Object *val
 		col_node->proto = *node;
 		col_node->next = next_col_node;
 
-		next_col_node->proto.key = key;
-		next_col_node->proto.hash = hash;
-		next_col_node->proto.value = value;
+		((SingleNode*)next_col_node)->key = key;
+		((SingleNode*)next_col_node)->hash = hash;
+		((SingleNode*)next_col_node)->value = value;
 		
 		return (Node*)col_node;
 	} else {
@@ -155,6 +154,9 @@ void print_tree(Node *n, int space) {
 			}
 			break;
 		default:
+			while(s--) {
+				printf(" ");
+			}
 			printf(".\n");
 	}	
 }
@@ -182,15 +184,28 @@ int main(int argc, char **argv) {
 		printf("not found\n");
 	}
 	
-	key = new_ostring("blaha");
+	key = new_ostring("blIrp4iu34iurjbk");
 	value = new_ostring("fooo");
 
 	Node *newnewnewhash = INSERT(newnewhash, key, value);
 
 	printf("the value is %s here\n", OSTR2CSTR(FIND(newnewnewhash, key)));
-	printf("wat");
 	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, new_ostring("blah"))));
 
 	print_tree(newnewnewhash,0);
+
+	Node *newnewnewnewhash = REMOVE(newnewnewhash, key);
+	t = FIND(newnewhash, key);
+
+	if(t != NULL) {
+		printf("the value is %s\n", OSTR2CSTR(t));
+
+	} else {
+		printf("removed\n");
+	}
+
+
+	print_tree(newnewnewnewhash,0);
+	return 0;
 
 }
