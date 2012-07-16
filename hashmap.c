@@ -92,7 +92,8 @@ Node *single_insert(Node *self, int level, Object *key, Object *value) {
 		CollisionNode *col_node = new_collision_node();
 		CollisionNode *next_col_node = new_collision_node();
 
-		col_node->proto = *node;
+		((SingleNode*)col_node)->key = node->key;
+		((SingleNode*)col_node)->value = node->value;
 		col_node->next = next_col_node;
 
 		((SingleNode*)next_col_node)->key = key;
@@ -142,6 +143,7 @@ Node *collision_remove(Node *self, int level, Object *key);
 
 void print_tree(Node *n, int space) {
 	int s = space;
+	CollisionNode *m = (CollisionNode*)n;
 	
 	switch(((Object*)n)->class) {
 		case SINGLENODE:
@@ -153,6 +155,19 @@ void print_tree(Node *n, int space) {
 			else if(((SingleNode*)n)->value->class == OINT)
 				printf("s: %u, %d\n", ((SingleNode*)n)->key->hash, ((OInt*)((SingleNode*)n)->value)->n);
 			break;
+		case COLLISIONNODE:
+			for(; m != NULL; m = m->next) {
+				s = space;
+				while(s--) {
+					printf(" ");
+				}
+				if(((SingleNode*)m)->value->class == OSTRING)
+					printf("c: %u, %s\n", ((SingleNode*)m)->key->hash, ((OString*)((SingleNode*)m)->value)->str);
+				else if(((SingleNode*)m)->value->class == OINT)
+					printf("c: %u, %d\n", ((SingleNode*)m)->key->hash, ((OInt*)((SingleNode*)m)->value)->n);
+			}
+			break;
+
 		case BITMAPNODE:
 			printf("b:");
 			for(s=0;s<32;s++) {
@@ -192,6 +207,7 @@ int main(int argc, char **argv) {
 	
 	key = new_ostring("blIrp4iu34iurjbk");
 	value = new_ostring("fooo");
+	OInt* key2 = new_oint(86739921);
 	OInt* value2 = new_oint(300);
 
 	Node *newnewnewhash = INSERT(newnewhash, key, value);
@@ -214,7 +230,7 @@ int main(int argc, char **argv) {
 
 	print_tree(newnewnewnewhash,0); */
 
-	Node *gnuhash = INSERT(newnewnewhash, key, value2);
+	Node *gnuhash = INSERT(newnewnewhash, key2, value2);
 
 	print_tree(gnuhash, 0);
 
