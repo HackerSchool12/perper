@@ -41,6 +41,9 @@ BitmapNode * new_bitmap_node() {
 CollisionNode * new_collision_node() {
 	CollisionNode *n = malloc(sizeof(CollisionNode));
 	((Object*)n)->class = COLLISIONNODE;
+	((Node*)n)->find = collision_find;
+	((Node*)n)->insert = collision_insert;
+	((Node*)n)->remove = collision_remove;
 	n->next = NULL;
 	return n;
 }
@@ -155,7 +158,22 @@ Node *bitmap_remove(Node *self, int level, Object *key) {
 	return (Node*)new;
 }
 
-Node *collision_remove(Node *self, int level, Object *key);
+Node *collision_remove(Node *self, int level, Object *key) {
+	SingleNode *n = (SingleNode*)self;
+	CollisionNode *m = (CollisionNode*)self;
+	if(n->key->equal(n->key, key)) {
+		if (m->next != NULL) {
+			return (Node*)m->next;
+		} else {
+			return NULL;
+		}
+	} else {
+		CollisionNode *new = malloc(sizeof(CollisionNode));
+		memcpy(new, m, sizeof(CollisionNode));
+		new->next = (CollisionNode*)collision_remove((Node*)m->next, level, key);
+		return (Node*)new;
+	}
+}
 
 void print_tree(Node *n, int space) {
 	int s = space;
@@ -199,14 +217,47 @@ void print_tree(Node *n, int space) {
 }
 
 int main(int argc, char **argv) {
-	printf("hello world\n");
-	Node *myhash = new_empty_node();
-	OString *key = new_ostring("fooo baar");
-	OString *value = new_ostring("baz boo");
+	// printf("hello world\n");
+	Node *n1 = new_empty_node();
+	OString *k1 = new_ostring("foo");
+	OString *v1 = new_ostring("bar");
 
-	Node *newhash = INSERT(myhash, key, value);
+	printf("Inserting value 'bar' with key 'foo'...\n");
+	Node *n2 = INSERT(n1, k1, v1);
+	printf("Inserted.\n");
 
-	printf("the value is %s\n", OSTR2CSTR(FIND(newhash, key)));
+	printf("Looking for value associated with key 'foo'...\n");
+	printf("Found: %s\n", OSTR2CSTR(FIND(n2, k1)));
+
+	printf("Inserting value 'bat' associated with key 'baz'...\n");
+	OString *k2 = new_ostring("baz");
+	OString *v2 = new_ostring("bat");
+	Node *n3 = INSERT(n2, k2, v2);
+	printf("Inserted.\n");
+
+	printf("Looking for value associated with key 'baz'...\n");
+	printf("Found: %s\n", OSTR2CSTR(FIND(n3, k2)));
+
+	//printf("Printing tree...\n");
+	//print_tree(n3, 0);
+
+	printf("Inserting value 'quux' associated with integer key '815990715'...\n");
+	OInt *k3 = new_oint(815990715);
+	OString *v3 = new_ostring("quux");
+	Node *n4 = INSERT(n3, k3, v3);
+	printf("Inserted.\n");
+
+	printf("Looking for value associated with key '815990715'...\n");
+	printf("Found: %s\n", OSTR2CSTR(FIND(n4, k3)));
+
+	print_tree(n4, 0);
+
+	printf("Trying to remove node with key '815990715'...\n");
+	Node *killed = REMOVE(n4, k3);
+
+	print_tree(killed, 0);
+
+	/* printf("the value is %s\n", OSTR2CSTR(FIND(newhash, key)));
 
 	key = new_ostring("blah");
 	value = new_ostring("jhshjda");
@@ -229,7 +280,7 @@ int main(int argc, char **argv) {
 	Node *newnewnewhash = INSERT(newnewhash, key, value);
 
 	printf("the value is %s here\n", OSTR2CSTR(FIND(newnewnewhash, key)));
-	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, new_ostring("blah"))));
+	printf("the value is  still %s\n", OSTR2CSTR(FIND(newnewhash, new_ostring("blah")))); */
 
 	/*print_tree(newnewnewhash,0);
 
@@ -246,9 +297,9 @@ int main(int argc, char **argv) {
 
 	print_tree(newnewnewnewhash,0); */
 
-	Node *gnuhash = INSERT(newnewnewhash, key2, value2);
+	/* Node *gnuhash = INSERT(newnewnewhash, key2, value2);
 
-	print_tree(gnuhash, 0);
+	print_tree(gnuhash, 0); */
 
 	return 0;
 
