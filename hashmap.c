@@ -45,6 +45,39 @@ CollisionNode * new_collision_node() {
 	return n;
 }
 
+bool empty_equal(Object *self, Object *other) {
+	return (bool)(self->class == other->class);
+}
+
+bool single_equal(Object *self, Object *other) {
+	SingleNode *s = (SingleNode*)self;
+	SingleNode *o = (SingleNode*)other;
+	return (bool)(
+		self->class == other->class
+		&& s->key->equal(s->key, o->key)
+		&& s->value->equal(s->value, o->value)
+	);
+}
+
+bool bitmap_equal(Object *self, Object *other) {
+	BitmapNode *s = (BitmapNode*)self;
+	BitmapNode *o = (BitmapNode*)other;
+	int i = 32;
+	bool same = (bool)(self->class == other->class);
+	while(i-- && same) {
+		same = same && ((Object*)s->children[i])->equal(
+				(Object*)s->children[i], (Object*)o->children[i]);
+	}
+	return same;
+}
+
+bool collision_equal(Object *self, Object *other);
+
+char *empty_to_string(Node *self);
+char *single_to_string(Node *self);
+char *bitmap_to_string(Node *self);
+char *collision_to_string(Node *self);
+
 Object *empty_find(Node *self, int level, Object *key) {
 	return NULL;
 }
