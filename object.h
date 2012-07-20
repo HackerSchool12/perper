@@ -16,14 +16,12 @@ typedef enum class_t {
 } class_t;
 
 typedef bool (*equalifier)(Object *obj, Object *other);
-typedef char *(*stringifier)(Object *obj);
 
 // everything that goes into a map should implement this
 struct Object {
 	class_t class;
 	hash_t hash;
 	equalifier equal;
-	stringifier to_string;
 };
 
 struct OString {

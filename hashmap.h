@@ -60,16 +60,6 @@ SingleNode *new_single_node();
 BitmapNode * new_bitmap_node();
 CollisionNode * new_collision_node();
 
-bool empty_equal(Object *self, Object *other);
-bool single_equal(Object *self, Object *other);
-bool bitmap_equal(Object *self, Object *other);
-bool collision_equal(Object *self, Object *other);
-
-char *empty_to_string(Node *self);
-char *single_to_string(Node *self);
-char *bitmap_to_string(Node *self);
-char *collision_to_string(Node *self);
-
 Object *empty_find(Node *self, int level, Object *key);
 Object *single_find(Node *self, int level, Object *key);
 Object *bitmap_find(Node *self, int level, Object *key);
