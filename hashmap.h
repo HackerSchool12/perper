@@ -55,10 +55,17 @@ struct BitmapNode {
 
 #define REMOVE(map, key) ((Node*)map)->remove(((Node*)map), 0, ((Object*)key))
 
+//TODO: implement hash and equal for nested maps
+
 Node *new_empty_node();
 SingleNode *new_single_node();
 BitmapNode * new_bitmap_node();
 CollisionNode * new_collision_node();
+
+void empty_free(Object *self);
+void single_free(Object *self);
+void bitmap_free(Object *self);
+void collision_free(Object *self);
 
 Object *empty_find(Node *self, int level, Object *key);
 Object *single_find(Node *self, int level, Object *key);

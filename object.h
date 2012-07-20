@@ -16,12 +16,15 @@ typedef enum class_t {
 } class_t;
 
 typedef bool (*equalifier)(Object *obj, Object *other);
+typedef void (*freeer)(Object *obj);
 
 // everything that goes into a map should implement this
 struct Object {
 	class_t class;
 	hash_t hash;
+	unsigned int refcount;
 	equalifier equal;
+	freeer free;
 };
 
 struct OString {
@@ -31,6 +34,7 @@ struct OString {
 
 #define OSTRLEN(o) strlen(OSTR2CSTR(o))
 #define OSTR2CSTR(o) ((OString*)(o))->str
+#define OINT2INT(i) ((OInt*)(i))->n
 
 OString *new_ostring(char *str);
 OInt *new_oint(int n);
@@ -42,3 +46,6 @@ struct OInt {
 
 hash_t hash(void *obj, int size);
 
+void retain(Object *obj);
+
+void release(Object *obj);
