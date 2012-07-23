@@ -1,5 +1,7 @@
 #include <stdbool.h>
 
+#pragma once
+
 typedef struct Object Object;
 typedef struct OString OString;
 typedef struct OInt OInt;
@@ -13,6 +15,11 @@ typedef enum class_t {
 	COLLISIONNODE,
 	OSTRING,
 	OINT,
+	OFLOAT, //TODO
+	OARRAY, //TODO
+	OPY,
+	OUSER1,
+	OUSER2,
 } class_t;
 
 typedef bool (*equalifier)(Object *obj, Object *other);

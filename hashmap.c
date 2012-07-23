@@ -4,6 +4,29 @@
 
 #include "hashmap.h"
 
+
+//TODO: implement hash and equal for nested maps
+
+void empty_free(Object *self);
+void single_free(Object *self);
+void bitmap_free(Object *self);
+void collision_free(Object *self);
+
+Object *empty_find(Node *self, int level, Object *key);
+Object *single_find(Node *self, int level, Object *key);
+Object *bitmap_find(Node *self, int level, Object *key);
+Object *collision_find(Node *self, int level, Object *key);
+
+Node *empty_insert(Node *self, int level, Object *key, Object *value);
+Node *single_insert(Node *self, int level, Object *key, Object *value);
+Node *bitmap_insert(Node *self, int level, Object *key, Object *value);
+Node *collision_insert(Node *self, int level, Object *key, Object *value);
+
+Node *empty_remove(Node *self, int level, Object *key);
+Node *single_remove(Node *self, int level, Object *key);
+Node *bitmap_remove(Node *self, int level, Object *key);
+Node *collision_remove(Node *self, int level, Object *key);
+
 Node *new_empty_node() {
 	static Node *n = NULL;
 	if(n == NULL) {
@@ -273,7 +296,7 @@ void print_tree(Node *n, int space) {
 	}	
 }
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
 	Node *original = new_empty_node();
 
 	OInt *key1 = new_oint(5);
@@ -293,4 +316,4 @@ int main(int argc, char **argv) {
 	release((Object*)key2);
 	release((Object*)value2);
 	return 0;
-}
+}*/

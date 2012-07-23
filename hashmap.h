@@ -1,5 +1,7 @@
 #include "object.h"
 
+#pragma once
+
 typedef struct Node Node;
 typedef struct SingleNode SingleNode;
 typedef struct BitmapNode BitmapNode;
@@ -55,29 +57,7 @@ struct BitmapNode {
 
 #define REMOVE(map, key) ((Node*)map)->remove(((Node*)map), 0, ((Object*)key))
 
-//TODO: implement hash and equal for nested maps
-
-Node *new_empty_node();
-SingleNode *new_single_node();
-BitmapNode * new_bitmap_node();
-CollisionNode * new_collision_node();
-
-void empty_free(Object *self);
-void single_free(Object *self);
-void bitmap_free(Object *self);
-void collision_free(Object *self);
-
-Object *empty_find(Node *self, int level, Object *key);
-Object *single_find(Node *self, int level, Object *key);
-Object *bitmap_find(Node *self, int level, Object *key);
-Object *collision_find(Node *self, int level, Object *key);
-
-Node *empty_insert(Node *self, int level, Object *key, Object *value);
-Node *single_insert(Node *self, int level, Object *key, Object *value);
-Node *bitmap_insert(Node *self, int level, Object *key, Object *value);
-Node *collision_insert(Node *self, int level, Object *key, Object *value);
-
-Node *empty_remove(Node *self, int level, Object *key);
-Node *single_remove(Node *self, int level, Object *key);
-Node *bitmap_remove(Node *self, int level, Object *key);
-Node *collision_remove(Node *self, int level, Object *key);
+Node *new_empty_node(void);
+SingleNode *new_single_node(void);
+BitmapNode * new_bitmap_node(void);
+CollisionNode * new_collision_node(void);
