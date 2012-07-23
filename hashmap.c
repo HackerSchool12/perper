@@ -32,6 +32,7 @@ Node *new_empty_node() {
 	if(n == NULL) {
 		n = malloc(sizeof(Node));
 		((Object*)n)->class = EMPTYNODE;
+		((Object*)n)->refcount = 1;
 		n->find = empty_find;
 		n->insert = empty_insert;
 		n->remove = empty_remove;
@@ -157,6 +158,8 @@ Node *single_insert(Node *self, int level, Object *key, Object *value) {
 		return (Node*)parent;
 	} else if (node->key->equal(node->key, key)) {
 		SingleNode *n = new_single_node();
+		retain((Object*)key);
+		retain((Object*)value);
 		n->key = key;
 		n->value = value;
 		return (Node*)n;
@@ -179,6 +182,7 @@ Node *bitmap_insert(Node *self, int level, Object *key, Object *value) {
 	BitmapNode *node = (BitmapNode*)self;
 	BitmapNode *new = malloc(sizeof(BitmapNode));
 	memcpy(new, node, sizeof(BitmapNode));
+	((Object*)new)->refcount = 1;
 	
 	int i;
 	for(i=0;i<32;i++) {

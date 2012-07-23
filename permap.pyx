@@ -37,6 +37,7 @@ cdef class PersistentDict(object):
         Py_INCREF(key)
         ckey = <Object*>new_opy(key)
         cval = <OPy*>self.cdict.find(self.cdict, 0, ckey)
+        release(ckey)
         if cval != NULL:
             return <object>cval.obj
 
@@ -46,6 +47,8 @@ cdef class PersistentDict(object):
         ckey = <Object*>new_opy(key)
         cval = <Object*>new_opy(value)
         newdict = <Node*>self.cdict.insert(self.cdict, 0, ckey, cval)
+        release(ckey)
+        release(cval)
         pydict = PersistentDict()
         pydict.cdict = newdict
         return pydict
@@ -54,6 +57,7 @@ cdef class PersistentDict(object):
         Py_INCREF(key)
         ckey = <Object*>new_opy(key)
         newdict = <Node*>self.cdict.remove(self.cdict, 0, ckey)
+        release(ckey)
         pydict = PersistentDict()
         pydict.cdict = newdict
         return pydict
