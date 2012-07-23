@@ -1,4 +1,4 @@
-from cpython cimport PyObject
+from cpython cimport PyObject, Py_INCREF, Py_DECREF
 
 cdef extern from "object.h":
     ctypedef struct Object:
@@ -34,12 +34,15 @@ cdef class PersistentDict(object):
         self.cdict = new_empty_node()
 
     def __getitem__(self, key):
+        Py_INCREF(key)
         ckey = <Object*>new_opy(key)
         cval = <OPy*>self.cdict.find(self.cdict, 0, ckey)
         if cval != NULL:
             return <object>cval.obj
 
     def setitem(self, key, value):
+        Py_INCREF(key)
+        Py_INCREF(value)
         ckey = <Object*>new_opy(key)
         cval = <Object*>new_opy(value)
         newdict = <Node*>self.cdict.insert(self.cdict, 0, ckey, cval)
@@ -48,8 +51,12 @@ cdef class PersistentDict(object):
         return pydict
 
     def delitem(self, key):
+        Py_INCREF(key)
         ckey = <Object*>new_opy(key)
         newdict = <Node*>self.cdict.remove(self.cdict, 0, ckey)
         pydict = PersistentDict()
         pydict.cdict = newdict
         return pydict
+
+    def __dealloc__(self):
+        release(<Object*>self.cdict)
