@@ -17,6 +17,7 @@ void opy_free(Object *obj) {
 
 
 OPy *new_opy(PyObject *obj) {
+	Py_INCREF(obj);
 	OPy *opy = malloc(sizeof(OPy));
 	opy->proto.hash = PyObject_Hash(obj);
 	opy->proto.class = OPY;
