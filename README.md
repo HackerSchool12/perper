@@ -1,11 +1,11 @@
 Perper
 ======
 
-_Fast persistent hashtrie implemented in C_
+_Efficient persistent hashtrie implemented in C_
 
-This project implements a persistent hash map as seen in Clojure. It is implemented in C, but provides Python bidnings for convenience.
+This project implements a persistent hash map as seen in Clojure. It is implemented in C, but provides Python bindings for convenience.
 
-Check [this page][1] for more infor about how persistent hash tries are implemented.
+Check [this page][1] for more info about how persistent hash tries are implemented.
 
 Usage
 -----
