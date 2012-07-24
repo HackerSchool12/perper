@@ -36,9 +36,9 @@ for x in xrange(10000):
         p = p.setitem(y, x)
 ```
 ```
-real0m20.730s
-user0m20.689s
-sys0m0.020s
+real	0m20.730s
+user	0m20.689s
+sys	0m0.020s
 ```
 
 ```python
@@ -49,8 +49,24 @@ for x in xrange(10000):
     for y in xrange(1000):
         p = p.using(**{str(y):x})
 ```
-Still running...
+```
+real	27m18.539s
+user	27m15.954s
+sys	0m0.540s
+```
+```python
+from perseus import frozendict
 
+p = frozendict()
+for x in xrange(10000):
+    for y in xrange(1000):
+        p = p.withPair(y, x)
+```
+```
+real	2m58.169s
+user	2m57.791s
+sys	0m0.024s
+```
 ```clojure
 user=> (time (reduce conj {} (for [x (range 10000) y (range 1000)] [y x])))
 "Elapsed time: 13728.298915 msecs"
