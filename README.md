@@ -40,7 +40,36 @@ real	0m20.730s
 user	0m20.689s
 sys	0m0.020s
 ```
+```c
+#include "hashmap.h"
 
+int main(int argc, char *argv[]) {
+        int x;
+        int y;
+        OInt *key;
+        OInt *val;
+        Node *p = new_empty_node();
+        Node *q;
+        for(x=0;x<10000;x++) {
+                for(y=0;y<1000;y++) {
+                        key = new_oint(y);
+                        val = new_oint(x);
+                        q = INSERT(p, key, val);
+                        release((Object*)key);
+                        release((Object*)val);
+                        release((Object*)p);
+                        p = q;
+                }
+        }
+        release((Object*)p);
+        return 0;
+}
+```
+```
+real	0m14.430s
+user	0m14.413s
+sys	0m0.000s
+```
 ```python
 from pysistence import make_dict
 p = make_dict()

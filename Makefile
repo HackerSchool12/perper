@@ -1,10 +1,10 @@
 CFLAGS=-Wall -g 
 
-all: hashmap
+all: test
  
-hashmap: hashmap.o object.o
+test: hashmap.o object.o
 
 .PHONY: clean all
 clean:
-	rm *.o hashmap
+	rm *.o *.so
 
