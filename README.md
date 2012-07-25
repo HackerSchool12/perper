@@ -7,6 +7,8 @@ This project implements a persistent hash map as seen in Clojure. It is implemen
 
 Check [this page][1] for more info about how persistent hash tries are implemented.
 
+ctags annotated source is avaliable in the [gh-pages branch][3]. I recommend starting in perper.pyx or hashmap.c, and clicking your way through.
+
 Usage
 -----
 
@@ -110,3 +112,4 @@ TODO
  * Implement hash and equality to support nested maps
 
 [1]: http://blog.higher-order.net/2009/09/08/understanding-clojures-persistenthashmap-deftwice/
+[3]: http://pepijndevos.nl/perper/
