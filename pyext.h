@@ -6,7 +6,7 @@
 typedef struct OPy OPy;
 
 struct OPy {
-	Object proto;
+	OBJECTHEADER(ObjectType)
 	PyObject *obj;
 };
 

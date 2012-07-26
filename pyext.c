@@ -15,15 +15,14 @@ void opy_free(Object *obj) {
 	free(self);
 }
 
+ObjectType opy_type = {opy_equal, opy_free};
 
 OPy *new_opy(PyObject *obj) {
 	Py_INCREF(obj);
 	OPy *opy = malloc(sizeof(OPy));
-	opy->proto.hash = PyObject_Hash(obj);
-	opy->proto.class = OPY;
-	opy->proto.equal = opy_equal;
+	opy->hash = PyObject_Hash(obj);
+	opy->class = &opy_type;
 	opy->obj = obj;
-	opy->proto.refcount = 1;
-	opy->proto.free = opy_free;
+	opy->refcount = 1;
 	return opy;
 }

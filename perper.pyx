@@ -9,33 +9,35 @@ cdef extern from "object.h":
 
 cdef extern from "pyext.h":
     ctypedef struct OPy:
-        Object proto
         PyObject *obj
     
     OPy *new_opy(object obj)
 
 cdef extern from "hashmap.h":
-    ctypedef Object *(*finder)(Node *self, int level, Object *key)
-    ctypedef Node *(*inserter)(Node *self, int level, Object *key, Object *value)
-    ctypedef Node *(*remover)(Node *self, int level, Object *key)
+    ctypedef Object *(*finder)(BasicNode *self, int level, Object *key)
+    ctypedef BasicNode *(*inserter)(BasicNode *self, int level, Object *key, Object *value)
+    ctypedef BasicNode *(*remover)(BasicNode *self, int level, Object *key)
 
-    ctypedef struct Node:
-        Object proto
+    ctypedef struct NodeType:
         finder find
         inserter insert
         remover remove
 
-    Node *new_empty_node()
+    ctypedef struct BasicNode:
+        NodeType *class_ "class"
+
+
+    BasicNode *new_empty_node()
 
 cdef class PersistentDict(object):
-    cdef Node *cdict
+    cdef BasicNode *cdict
 
     def __init__(self):
         self.cdict = new_empty_node()
 
     def __getitem__(self, key):
         ckey = <Object*>new_opy(key)
-        cval = <OPy*>self.cdict.find(self.cdict, 0, ckey)
+        cval = <OPy*>self.cdict.class_.find(self.cdict, 0, ckey)
         release(ckey)
         if cval != NULL:
             return <object>cval.obj
@@ -43,7 +45,7 @@ cdef class PersistentDict(object):
     def setitem(self, key, value):
         ckey = <Object*>new_opy(key)
         cval = <Object*>new_opy(value)
-        newdict = <Node*>self.cdict.insert(self.cdict, 0, ckey, cval)
+        newdict = <BasicNode*>self.cdict.class_.insert(self.cdict, 0, ckey, cval)
         release(ckey)
         release(cval)
         pydict = PersistentDict()
@@ -52,7 +54,7 @@ cdef class PersistentDict(object):
 
     def delitem(self, key):
         ckey = <Object*>new_opy(key)
-        newdict = <Node*>self.cdict.remove(self.cdict, 0, ckey)
+        newdict = <BasicNode*>self.cdict.class_.remove(self.cdict, 0, ckey)
         release(ckey)
         pydict = PersistentDict()
         pydict.cdict = newdict
