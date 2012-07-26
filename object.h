@@ -3,40 +3,39 @@
 #pragma once
 
 typedef struct Object Object;
+typedef struct ObjectType ObjectType;
 typedef struct OString OString;
 typedef struct OInt OInt;
 typedef unsigned int hash_t;
 
-typedef enum class_t {
-	OBJECT,
-	EMPTYNODE,
-	SINGLENODE,
-	BITMAPNODE,
-	COLLISIONNODE,
-	OSTRING,
-	OINT,
-	OFLOAT, //TODO
-	OARRAY, //TODO
-	OPY,
-	OUSER1,
-	OUSER2,
-} class_t;
-
 typedef bool (*equalifier)(Object *obj, Object *other);
 typedef void (*freeer)(Object *obj);
 
-// everything that goes into a map should implement this
-struct Object {
-	class_t class;
-	hash_t hash;
-	unsigned int refcount;
-	equalifier equal;
+#define OBJECTTYPEHEADER \
+	equalifier equal; \
 	freeer free;
+
+#define OBJECTHEADER(type) \
+	type *class; \
+	hash_t hash; \
+	unsigned int refcount;
+
+struct ObjectType {
+	OBJECTTYPEHEADER
+};
+
+struct Object {
+	OBJECTHEADER(ObjectType)
 };
 
 struct OString {
-	Object proto;
+	OBJECTHEADER(ObjectType)
 	char * str;
+};
+
+struct OInt {
+	OBJECTHEADER(ObjectType)
+	int n;
 };
 
 #define OSTRLEN(o) strlen(OSTR2CSTR(o))
@@ -45,11 +44,6 @@ struct OString {
 
 OString *new_ostring(char *str);
 OInt *new_oint(int n);
-
-struct OInt {
-	Object proto;
-	int n;
-};
 
 hash_t hash(void *obj, int size);
 

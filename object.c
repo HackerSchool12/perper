@@ -19,7 +19,7 @@ void retain(Object *obj) {
 void release(Object *obj) {
 	obj->refcount--;
 	if(obj->refcount == 0) {
-		obj->free(obj);
+		obj->class->free(obj);
 	}
 }
 
@@ -36,14 +36,14 @@ void ostring_free(Object *obj) {
 	free(s);
 }
 
+ObjectType ostring_type = {ostring_equal, ostring_free};
+
 OString *new_ostring(char *str) {
 	OString *ostr = malloc(sizeof(OString));
-	ostr->proto.hash = hash(str, strlen(str));
-	ostr->proto.class = OSTRING;
-	ostr->proto.equal = ostring_equal;
+	ostr->hash = hash(str, strlen(str));
+	ostr->class = &ostring_type;
 	ostr->str = str;
-	ostr->proto.refcount = 1;
-	ostr->proto.free = ostring_free;
+	ostr->refcount = 1;
 	return ostr;
 }
 
@@ -58,13 +58,13 @@ void oint_free(Object *obj) {
 	free(obj);
 }
 
+ObjectType oint_type = {oint_equal, oint_free};
+
 OInt *new_oint(int n) {
 	OInt *on = malloc(sizeof(OInt));
-	((Object*)on)->hash = (hash_t)n;
-	((Object*)on)->class = OINT;
-	((Object*)on)->equal = oint_equal;
+	on->hash = (hash_t)n;
+	on->class = &oint_type;
 	on->n = n;
-	((Object*)on)->refcount = 1;
-	((Object*)on)->free = oint_free;
+	on->refcount = 1;
 	return on;
 }
