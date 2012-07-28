@@ -2,7 +2,7 @@
 
 #pragma once
 
-typedef struct NodeType NodeType;
+typedef const struct NodeType NodeType;
 typedef struct BasicNode BasicNode;
 typedef struct SingleNode SingleNode;
 typedef struct BitmapNode BitmapNode;
